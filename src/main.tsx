@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Signup from "./pages/Signup.tsx";
 import { store } from './app/store'
 import { Provider } from 'react-redux'
+import Analytics from "./pages/Analytics.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login/>} />
         <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path="/analytics" element={<Analytics/>} />
         <Route path="/signup" element={<Signup/>} />
       </Routes>
     </BrowserRouter>

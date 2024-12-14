@@ -15,7 +15,7 @@ const HomePage = () => {
         <p className="text-lg mb-8 text-gray-600">
           Simplify your workforce management with our intuitive and powerful app.
         </p>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button onClick={()=>navigate("/dashboard")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Get Started
         </button>
       </div>
