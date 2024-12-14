@@ -1,9 +1,9 @@
 import { NavLink } from "react-router";
-// import { toast } from "react-toastify"
-// import { Context } from '../MyContext';
-// import { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser } from '../app/features/users/userSlice';
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify"
 
 const Signup = () => {
   const [showpass, setshowpass] = useState(false)
@@ -12,7 +12,9 @@ const Signup = () => {
   const [pwd, setPwd] = useState('');
   const [email, setemail] = useState('');
 
-  let navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const error = useSelector((state) => state.users.error);
 
   const passwordValidator = (pass) => {
     let passobject = { password: pass, error: false, errormessege: "" }
@@ -47,38 +49,26 @@ const Signup = () => {
     }
   }
 
-  const handle = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, pwd)
-      await updateProfile(auth.currentUser, {
-        displayName: name,
-        // photoURL: "https://tarun.com/tarun.jpg"
-      })
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const handleSignup = () => {
     if (name.length <= 3) {
-      // toast.error("name must be of 3 characters")
-      return
+      toast.error('Name must be at least 3 characters');
+      return;
     }
 
-    if (passwordValidator(pwd).error) {
-      let messege = passwordValidator(pwd).errormessege
-      // toast.error(messege)
-      return
+    if (pwd !== checkpassword) {
+      toast.error('Passwords do not match');
+      return;
     }
-    if (checkpassword == pwd) {
-      handle()
-      navigate("/login")
-      // toast.success("account created")
+
+    dispatch(addUser({ username: name, email, password: pwd }));
+
+    if (!error) {
+      toast.success('Account created successfully!');
+      navigate('/login');
+    } else {
+      toast.error(error);
     }
-    else { 
-      // toast.error("confirm password do not match") 
-    }
-  }
+  };
 
   return (
     <>
@@ -96,14 +86,14 @@ const Signup = () => {
                     <input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      type="email" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="" />
+                      type="email" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="username" required="" />
                   </div>
                   <div>
                     <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                     <input
                       value={email}
                       onChange={(e) => setemail(e.target.value)}
-                      type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="" />
+                      type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="email" required="" />
                   </div>
                   <div>
                     <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>

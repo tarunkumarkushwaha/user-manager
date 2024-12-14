@@ -10,11 +10,13 @@ import {
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import LoadingIcon from "../components/LoadingIcon";
+import { toast } from "react-toastify";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.users.currentUser);
   const { users, loading, error } = useSelector((state) => state.users);
   let navigate = useNavigate();
   const [userForm, setUserForm] = useState({
@@ -27,48 +29,50 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
 
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+
   const handleAddOrEditUser = () => {
+    if (!userForm.name || !userForm.email) {
+      toast.error("Name and email are required!");
+      return;
+    }
+    if (!validateEmail(userForm.email)) {
+      toast.error("Please enter a valid email address!");
+      return;
+    }
     if (isEditing) {
       dispatch(modifyUser(userForm));
+      toast.success("User edited successfully!");
       setIsEditing(false);
     } else {
       dispatch(addUser({ ...userForm, id: Date.now() }));
+      toast.success("User added successfully!");
     }
     resetForm();
   };
 
   const handleEdit = (user) => {
-    setUserForm(user);
+    setUserForm({
+      id: user.id || "",
+      name: user.name || "",
+      email: user.email || "",
+      status: user.status || "active",
+    });
     setIsEditing(true);
   };
 
   const handleDelete = (id) => {
     dispatch(deleteUser(id));
+    toast.success("user deleted successfully!");
   };
 
   const resetForm = () => {
     setUserForm({ id: "", name: "", email: "", status: "active" });
-  };
-
-  const totalUsers = users.length;
-  const activeUsers = users.filter((user) => user.status === "active").length;
-
-  const chartData = {
-    labels: ["Active Users", "Inactive Users"],
-    datasets: [
-      {
-        data: [activeUsers, totalUsers - activeUsers],
-        backgroundColor: ["#4CAF50", "#FFC107"],
-        hoverBackgroundColor: ["#45A049", "#FFB300"],
-      },
-    ],
   };
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -84,6 +88,12 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+    }
+  }, []);
 
   if (error) {
     return (
@@ -102,7 +112,9 @@ const Dashboard = () => {
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12" y2="20" />
         </svg>
-        <p className=" text-xl font-serif font-semibold">Error loading users: {error}</p>
+        <p className=" text-xl font-serif font-semibold">
+          Error loading users: {error}
+        </p>
       </div>
     );
   }
@@ -125,7 +137,7 @@ const Dashboard = () => {
         <h3 className="text-2xl font-semibold mb-4">
           {isEditing ? "Edit User" : "Add New User"}
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex justify-center items-center gap-4">
           <input
             type="text"
             name="name"
@@ -151,41 +163,36 @@ const Dashboard = () => {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </div>
-        <button
-          onClick={handleAddOrEditUser}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          {isEditing ? "Update User" : "Add User"}
-        </button>
-        {isEditing && (
           <button
-            onClick={resetForm}
-            className="mt-4 ml-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+            onClick={handleAddOrEditUser}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            Cancel
+            {isEditing ? "Update User" : "Add User"}
           </button>
-        )}
-        <button
-          onClick={() => navigate("/analytics")}
-          className="mt-4 ml-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-        >
-          Analytics
-        </button>
-      </div>
 
-      {/* Analytics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white shadow rounded-lg p-4 text-center">
-          <h3 className="text-xl font-semibold">Total Users</h3>
-          <p className="text-2xl text-blue-500 font-bold">{totalUsers}</p>
+          {isEditing && (
+            <button
+              onClick={resetForm}
+              className=" px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+          )}
         </div>
-        <div className="bg-white shadow rounded-lg p-4 text-center">
-          <h3 className="text-xl font-semibold">Active Users</h3>
-          <p className="text-2xl text-green-500 font-bold">{activeUsers}</p>
-        </div>
-        <div className="bg-white h-80 shadow rounded-lg p-6">
-          <Pie data={chartData} />
+
+        <div className="flex justify-center items-center gap-3">
+          <button
+            onClick={() => navigate("/analytics")}
+            className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+          >
+            Analytics
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-gray-600"
+          >
+            Refresh
+          </button>
         </div>
       </div>
 

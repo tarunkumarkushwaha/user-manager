@@ -1,31 +1,28 @@
-import { NavLink } from "react-router";
-// import { toast } from "react-toastify"
-// import { Context } from '../MyContext';
-// import { useContext } from 'react';
-import { useState } from "react";
-import { useNavigate } from "react-router";
-// import { toast } from "react-toastify"
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../app/features/users/userSlice';
+import { NavLink, useNavigate } from 'react-router';
+import { toast } from "react-toastify"
 
-const Login = ({onLogin}) => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // let navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const error = useSelector((state) => state.users.error);
+  const currentUser = useSelector((state) => state.users.currentUser);
 
-  const handleSignin = async () => {
-    try {
-      if (username && password) {
-        setIsAuthenticated(true);
+  const handleSignin = () => {
+    dispatch(loginUser({ username, password }));
+
+    if (!error) {
+      toast.success(`Welcome ${username}!`);
+      navigate('/dashboard');
     } else {
-        alert('Please enter valid credentials');
+      toast.error(error);
     }
-      navigate("/")
-    } catch (error) {
-      // toast.error(`${error}`)
-      console.log(error)
-    }
-  }
+  };
 
   return (
     <>
