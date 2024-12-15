@@ -1,14 +1,8 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import {
-  fetchUsers,
-  addUser,
-  modifyUser,
-  deleteUser,
-} from "../app/features/users/userSlice";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

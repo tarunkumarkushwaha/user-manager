@@ -7,12 +7,8 @@ import {
   modifyUser,
   deleteUser,
 } from "../app/features/users/userSlice";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import LoadingIcon from "../components/LoadingIcon";
 import { toast } from "react-toastify";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 // TypeScript types for the User and RootState
 type User = {
