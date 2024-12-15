@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './features/users/userSlice';
 

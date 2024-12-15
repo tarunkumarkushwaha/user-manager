@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NavLink } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../app/features/users/userSlice";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState, ChangeEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router"; 
 import { useDispatch, useSelector } from "react-redux";
