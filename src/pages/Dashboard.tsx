@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ChangeEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import {
@@ -14,27 +14,47 @@ import { toast } from "react-toastify";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Dashboard = () => {
+// TypeScript types for the User and RootState
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  status: "active" | "inactive";
+};
+
+type RootState = {
+  users: {
+    currentUser: User | null;
+    users: User[];
+    loading: boolean;
+    error: string | null;
+  };
+};
+
+const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.users.currentUser);
-  const { users, loading, error } = useSelector((state) => state.users);
-  let navigate = useNavigate();
-  const [userForm, setUserForm] = useState({
+  const navigate = useNavigate();
+
+  const currentUser = useSelector((state: RootState) => state.users.currentUser);
+  const { users, loading, error } = useSelector((state: RootState) => state.users);
+
+  const [userForm, setUserForm] = useState<User>({
     id: "",
     name: "",
     email: "",
     status: "active",
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const usersPerPage = 5;
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setUserForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const validateEmail = (email: string): boolean => /\S+@\S+\.\S+/.test(email);
 
   const handleAddOrEditUser = () => {
     if (!userForm.name || !userForm.email) {
@@ -50,25 +70,25 @@ const Dashboard = () => {
       toast.success("User edited successfully!");
       setIsEditing(false);
     } else {
-      dispatch(addUser({ ...userForm, id: Date.now() }));
+      dispatch(addUser({ ...userForm, id: Date.now().toString() }));
       toast.success("User added successfully!");
     }
     resetForm();
   };
 
-  const handleEdit = (user) => {
+  const handleEdit = (user: User) => {
     setUserForm({
-      id: user.id || "",
-      name: user.name || "",
-      email: user.email || "",
-      status: user.status || "active",
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      status: user.status,
     });
     setIsEditing(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string) => {
     dispatch(deleteUser(id));
-    toast.success("user deleted successfully!");
+    toast.success("User deleted successfully!");
   };
 
   const resetForm = () => {
@@ -80,20 +100,20 @@ const Dashboard = () => {
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(users.length / usersPerPage);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center flex-col items-center h-screen">
-        <LoadingIcon />
-        <p className=" text-xl font-serif font-semibold">loading data...</p>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (!currentUser) {
       navigate("/login");
     }
-  }, []);
+  }, [currentUser, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col items-center h-screen">
+        <LoadingIcon />
+        <p className="text-xl font-serif font-semibold">Loading data...</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -112,7 +132,7 @@ const Dashboard = () => {
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12" y2="20" />
         </svg>
-        <p className=" text-xl font-serif font-semibold">
+        <p className="text-xl font-serif font-semibold">
           Error loading users: {error}
         </p>
       </div>
@@ -120,31 +140,34 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div onClick={() => navigate("/")} className="text-center cursor-pointer">
-        <h1 className="text-5xl font-bold mb-4 text-gray-800">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+      <div
+        onClick={() => navigate("/")}
+        className="text-center cursor-pointer"
+      >
+        <h1 className="text-3xl sm:text-5xl font-bold mb-4 text-gray-800">
           <span className="text-blue-500">Employee</span>
           <span className="text-green-500">Management</span>
           <span className="text-yellow-500">App</span>
         </h1>
       </div>
-      <h2 className="text-3xl font-bold text-center mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">
         User Management Dashboard
       </h2>
 
       {/* User Form */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-2xl font-semibold mb-4">
+      <div className="bg-white shadow rounded-lg p-4 sm:p-6 mb-6">
+        <h3 className="text-xl sm:text-2xl font-semibold mb-4">
           {isEditing ? "Edit User" : "Add New User"}
         </h3>
-        <div className="flex justify-center items-center gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <input
             type="text"
             name="name"
             value={userForm.name}
             onChange={handleInputChange}
             placeholder="Name"
-            className="p-3 border rounded-lg"
+            className="p-3 border rounded-lg w-full"
           />
           <input
             type="email"
@@ -152,47 +175,33 @@ const Dashboard = () => {
             value={userForm.email}
             onChange={handleInputChange}
             placeholder="Email"
-            className="p-3 border rounded-lg"
+            className="p-3 border rounded-lg w-full"
           />
           <select
             name="status"
             value={userForm.status}
             onChange={handleInputChange}
-            className="p-3 border rounded-lg"
+            className="p-3 border rounded-lg w-full"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <button
-            onClick={handleAddOrEditUser}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            {isEditing ? "Update User" : "Add User"}
-          </button>
-
-          {isEditing && (
+          <div className="flex gap-2">
             <button
-              onClick={resetForm}
-              className=" px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+              onClick={handleAddOrEditUser}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
-              Cancel
+              {isEditing ? "Update User" : "Add User"}
             </button>
-          )}
-        </div>
-
-        <div className="flex justify-center items-center gap-3">
-          <button
-            onClick={() => navigate("/analytics")}
-            className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            Analytics
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            Refresh
-          </button>
+            {isEditing && (
+              <button
+                onClick={resetForm}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -266,3 +275,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

@@ -15,7 +15,6 @@ import {
 const API_URL = "https://jsonplaceholder.typicode.com/users";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
