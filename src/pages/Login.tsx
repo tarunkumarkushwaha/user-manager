@@ -10,18 +10,17 @@ const Login: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const error = useSelector((state: any) => state.users.error);
   const currentUser = useSelector((state: any) => state.users.currentUser);
 
   const handleSignin = async () => {
     try {
       await dispatch(loginUser({ username, password }));
-      if (currentUser) {
-        toast.success(`Welcome back, ${username}!`);
+      // if (!error) {
         navigate("/dashboard");
-      } else {
-        toast.error("Invalid credentials. Please try again.");
-      }
+        // toast.success(`Welcome back, ${username}!`);
+      // } else {
+      //   toast.error("Invalid credentials. Please try again.");
+      // }
     } catch (err) {
       toast.error(error || "An unexpected error occurred. Please try again.");
     }

@@ -61,7 +61,7 @@ const userSlice = createSlice({
         password: password || '',
         status: 'active',
       } as User);
-    
+    // console.log(JSON.stringify(state.users));
     },    
        
     loginUser: (
@@ -71,8 +71,10 @@ const userSlice = createSlice({
       const { username, password } = action.payload;
     
       const user = state.users.find(
-        (u) => u.name === username && u.password === password 
+        (u) => u.username === username && u.password === password 
       );
+
+      // console.log(user)
     
       if (user) {
         state.currentUser = user;
