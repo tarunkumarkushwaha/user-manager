@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import {
   fetchUsers,
 } from "./app/features/users/userSlice";
+import { useEffect } from "react";
+import HomePage from "./components/HomePage";
 
 function App() {
   const dispatch = useDispatch();

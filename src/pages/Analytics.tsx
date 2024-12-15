@@ -6,10 +6,9 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Define types for User and Redux State
 interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
   status: "active" | "inactive";
 }

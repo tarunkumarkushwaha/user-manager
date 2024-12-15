@@ -4,8 +4,7 @@ import axios from 'axios';
 const API_URL =  'https://jsonplaceholder.typicode.com/users';
 
 interface User {
-  id: number;
-  name: string;
+  id: string;
   email: string;
   status: 'active' | 'inactive';
   username?: string;
@@ -36,8 +35,8 @@ const initialState: UserState = {
   error: null,
 };
 
-export const fetchUsers = createAsyncThunk<User[]>('users/fetchUsers', async () => {
-  const response = await axios.get<User[]>(API_URL);
+export const fetchUsers = createAsyncThunk<any>('users/fetchUsers', async () => {
+  const response = await axios.get<any>(API_URL);
   return response.data.map((user) => ({
     ...user,
     status: Math.random() > 0.5 ? 'active' : 'inactive',
@@ -49,22 +48,20 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     addUser: (state, action: PayloadAction<Partial<User>>) => {
-      const { name, email, password } = action.payload;
-      console.log(action.payload)
-      if (!name) {
+      const { username, email, password } = action.payload;
+      // console.log(action.payload);
+      if (!username) {
         throw new Error('Username is required');
       }
     
       state.users.push({
         id: Date.now(),
-        username: name,
+        username: username,
         email: email || '',
         password: password || '',
         status: 'active',
       } as User);
     
-      // Debugging
-      console.log('Users in state after signup:', JSON.stringify(state.users));
     },    
        
     loginUser: (
@@ -73,9 +70,8 @@ const userSlice = createSlice({
     ) => {
       const { username, password } = action.payload;
     
-      // Check if a user with matching username and password exists
       const user = state.users.find(
-        (u) => u.name === username && u.password === password // Ensure correct fields are checked
+        (u) => u.name === username && u.password === password 
       );
     
       if (user) {
@@ -85,16 +81,13 @@ const userSlice = createSlice({
       } else {
         state.error = 'Invalid username or password!';
       }
-    
-      console.log('Login attempt:', { username, password }); // Debugging
-      console.log('Current Users in state:', state.users); // Debugging
     },
     
     logoutUser: (state) => {
       state.currentUser = null;
       localStorage.removeItem('currentUser');
     },
-    deleteUser: (state, action: PayloadAction<number>) => {
+    deleteUser: (state, action: PayloadAction<any>) => {
       const userId = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
 
@@ -105,7 +98,7 @@ const userSlice = createSlice({
         console.warn(`User with ID ${userId} not found.`);
       }
     },
-    setCurrentUser: (state, action: PayloadAction<User | null>) => {
+    setCurrentUser: (state, action: PayloadAction<User | any>) => {
       state.currentUser = action.payload;
     },
     modifyUser: (state, action: PayloadAction<User>) => {

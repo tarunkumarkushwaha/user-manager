@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router"; // Corrected `react-router` to `react-router-dom`
+import { Link, useLocation } from "react-router"; 
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../app/store"; // Ensure this is the correct path to your store's types
+import { RootState } from "../app/store"; 
 import { logoutUser } from "../app/features/users/userSlice";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     if (currentUser) {
-      toast.success(`User ${currentUser.name || "Unknown"} has logged out`);
+      toast.success(`user has logged out`);
       dispatch(logoutUser());
     }
   };

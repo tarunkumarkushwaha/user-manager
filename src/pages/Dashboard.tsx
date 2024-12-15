@@ -10,10 +10,9 @@ import {
 import LoadingIcon from "../components/LoadingIcon";
 import { toast } from "react-toastify";
 
-// TypeScript types for the User and RootState
 type User = {
   id: string;
-  name: string;
+  username: string;
   email: string;
   status: "active" | "inactive";
 };
@@ -36,7 +35,7 @@ const Dashboard: React.FC = () => {
 
   const [userForm, setUserForm] = useState<User>({
     id: "",
-    name: "",
+    username: "",
     email: "",
     status: "active",
   });
@@ -53,7 +52,7 @@ const Dashboard: React.FC = () => {
   const validateEmail = (email: string): boolean => /\S+@\S+\.\S+/.test(email);
 
   const handleAddOrEditUser = () => {
-    if (!userForm.name || !userForm.email) {
+    if (!userForm.username || !userForm.email) {
       toast.error("Name and email are required!");
       return;
     }
@@ -75,7 +74,7 @@ const Dashboard: React.FC = () => {
   const handleEdit = (user: User) => {
     setUserForm({
       id: user.id,
-      name: user.name,
+      username: user.username,
       email: user.email,
       status: user.status,
     });
@@ -88,7 +87,7 @@ const Dashboard: React.FC = () => {
   };
 
   const resetForm = () => {
-    setUserForm({ id: "", name: "", email: "", status: "active" });
+    setUserForm({ id: "", username: "", email: "", status: "active" });
   };
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -159,10 +158,10 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <input
             type="text"
-            name="name"
-            value={userForm.name}
+            name="username"
+            value={userForm.username}
             onChange={handleInputChange}
-            placeholder="Name"
+            placeholder="username"
             className="p-3 border rounded-lg w-full"
           />
           <input
@@ -217,7 +216,7 @@ const Dashboard: React.FC = () => {
             {currentUsers.map((user) => (
               <tr key={user.id} className="border-b hover:bg-gray-100">
                 <td className="p-3">{user.id}</td>
-                <td className="p-3">{user.name}</td>
+                <td className="p-3">{user.username}</td>
                 <td className="p-3">{user.email}</td>
                 <td
                   className={`p-3 font-semibold ${
